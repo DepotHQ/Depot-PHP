@@ -29,10 +29,10 @@ class Depot {
     private $accessToken;
     
     // base url for api calls
-    private $apiUrl = 'http://tc.depothq.com/api/v1';
+    private $apiUrl = 'http://tc.depothq.com/api/v1/';
     
     // debug mode
-    private $debug = true;
+    private $debug = false;
     
     // what format do you want responses in
     private $format = 'json';
@@ -85,22 +85,19 @@ class Depot {
         
         // call oauth
         $result = $this->call('', 'oauth', $params);
-        
-        // Get array of accessToken
-        $accessToken = json_decode($result, true);
-        
+
         // Save accessToken
-        $this->accessToken = $accessToken['access_token'];
+        $this->accessToken = $result->access_token;
     
         // Return the response as an array
-        return $accessToken;
+        return $result;
     }
     
     public function setAccessToken($accessToken){
         $this->accessToken = $accessToken;
     }
     
-    public function get($endpoint, $data=false){
+    public function get($endpoint, $data=array()){
         return $this->call($endpoint, 'get', $data);
     }
     
@@ -120,18 +117,9 @@ class Depot {
     * Private functions
     **************************************************************************/
     
-    private function call($endpoint, $type, $data=false){
+    private function call($endpoint, $type, $data=array()){
 
         $ch = curl_init();
-        
-        // Set curl url to call
-        if ($type == 'oauth'){
-            $curlURL = $this->oauthAccessTokenURL;
-        } else {
-            $curlURL = $this->apiUrl.$endpoint.'.'.$this->format;
-        }
-        
-        curl_setopt($ch, CURLOPT_URL, $curlURL);
         
         // Setup curl options
         $curl_options = array(
@@ -141,14 +129,28 @@ class Depot {
             CURLOPT_USERAGENT      => 'Depot-PHP'
         );
         
+        // Set curl url to call
+        if ($type == 'oauth'){
+            $curlURL = $this->oauthAccessTokenURL;
+        } else {
+            $curlURL = $this->apiUrl.$endpoint.'.'.$this->format.'?';
+            if ($this->mode == 'oauth'){
+            	$curlURL .= '&oauth_token='.$this->accessToken;
+            } else {
+	            $curl_options += array(
+	            	CURLOPT_HTTPHEADER => array(
+	            		'X-DEPOT-TOKEN: '.$this->clientId,
+	            		'X-DEPOT-SECRET: '.$this->clientSecret
+	            	)
+	            );
+            }
+        }
+                                                
         // type of request determines our headers
         switch($type){
         
             case 'post':
                 $curl_options = $curl_options + array(
-					CURLOPT_HTTPHEADER => array(
-						'Authorization: Bearer '.$this->accessToken,
-					),
 					CURLOPT_POST        => 1,
 					CURLOPT_POSTFIELDS  => $data
                 );
@@ -157,9 +159,6 @@ class Depot {
             case 'patch':
                 $curl_options = $curl_options + array(
 					CURLOPT_CUSTOMREQUEST => 'PATCH',
-					CURLOPT_HTTPHEADER => array(
-						'Authorization: Bearer '.$this->accessToken,
-					),
 					CURLOPT_POST        => 1,
 					CURLOPT_POSTFIELDS  => $data
                 );
@@ -168,19 +167,14 @@ class Depot {
             case 'delete':
                 $curl_options = $curl_options + array(
                 	CURLOPT_CUSTOMREQUEST => 'DELETE',
-                    CURLOPT_HTTPHEADER => array(
-                        'Authorization: Bearer '.$this->accessToken,
-                    ),
                     CURLOPT_POST        => 1,
                     CURLOPT_POSTFIELDS  => $data
                 );
             break;
                                                 
             case 'get':
+            	$curlURL .= '&'.http_build_query($data);
                 $curl_options = $curl_options + array(
-                    CURLOPT_HTTPHEADER => array(
-                        'Authorization: Bearer '.$this->accessToken
-                    )
                 );
             break;
                 
@@ -194,22 +188,29 @@ class Depot {
             
         }
         
+        // add url
+        $curl_options = $curl_options + array(
+			CURLOPT_URL => $curlURL
+        );
+                                
         // Set curl options
         curl_setopt_array($ch, $curl_options);
         
         // Send the request
         $result = curl_exec($ch);
-        $error = curl_errno($ch);
         
-        if($this->debug){
+        // curl info
+        $info = curl_getinfo($ch);
+        
+        if ($this->debug){
             var_dump($result);
-            var_dump($error);
+            var_dump($info);
         }
         
         // Close the connection
         curl_close($ch);
         
-        return json_decode($result, true);
+        return ($type == 'oauth' || $this->format == 'json') ? json_decode($result) : $result;
     }
             
 }

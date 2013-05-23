@@ -4,6 +4,7 @@
 ---
 
 An example of how to use the PHP kit for an oAuth call
+This allows you to login as a specific user
 
 ---
 */
@@ -11,21 +12,21 @@ An example of how to use the PHP kit for an oAuth call
 	ini_set('display_errors', 'on');
 
 	// enter your app's config details here
-	$oauthClient = 'sampleapp';
-	$oauthSecret = '1234512345';
-	$oauthCallback = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+	$oauthClient = 'your-client-id';
+	$oauthSecret = 'your-client-secret';
+	$oauthCallback = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
 
 	// include class
 	include('../Depot.php');
 	
 	// set up depot client
-	$client = new Depot($oauthClient, $oauthSecret);
+	$client = new Depot($oauthClient, $oauthSecret, 'oauth');
 		
 	// We need to build the authorise url and redirect user to authorise our app
-	if (!$_GET['code']){
+	if (!isset($_GET['code'])){
 		    
-	    $authoriseURL = $client->getAuthoriseURL($callbackURL);
-	    
+	    $authoriseURL = $client->getAuthoriseURL($oauthCallback);
+
 	    // redirect user
 	    header("Location: ".$authoriseURL);
 	    exit;
@@ -34,20 +35,19 @@ An example of how to use the PHP kit for an oAuth call
 	// We now have the authorisation code to retrieve the access token
 	} else {
 	
-	    $accessToken = $client->getAccessToken($_GET['code'], $callbackURL);
+	    $accessToken = $client->getAccessToken($_GET['code'], $oauthCallback);
 	    
-	    echo '<pre>';
-	    print_r($accessToken);
-	    echo '</pre>';
+	    echo '
+	    	<p>It worked - your access token is: '.$accessToken->access_token.'</p>
+	    	<p>Lets test the API by pulling down contacts</p>	
+	    	<pre>';
 	    
-	    // or
+	    print_r($client->get('contacts'));
 	    
-	    echo '<br>';
-	    echo $accessToken['accessToken'];
-	    
-	    // Note: The access token does not expire so you can now store that access
-	    // token in your database against that user or as a constant if you are
-	    // talking with the api for your account only.
+	    echo '
+	    	</pre>
+	    ';
+	    	    
 	}
 
 
