@@ -135,7 +135,12 @@ class Depot {
         } else {
             $curlURL = $this->apiUrl.$endpoint.'.'.$this->format.'?';
             if ($this->mode == 'oauth'){
-            	$curlURL .= '&oauth_token='.$this->accessToken;
+            	//$curlURL .= '&oauth_token='.$this->accessToken;
+	            $curl_options += array(
+	            	CURLOPT_HTTPHEADER => array(
+	            		'Authorization: Bearer '.$this->accessToken
+	            	)
+	            );            	
             } else {
 	            $curl_options += array(
 	            	CURLOPT_HTTPHEADER => array(
@@ -180,7 +185,6 @@ class Depot {
                 
             case 'oauth':
                 $curl_options = $curl_options + array(
-                    CURLOPT_HTTPHEADER => array('Accept: application/json'),
                     CURLOPT_POST       => 1,
                     CURLOPT_POSTFIELDS => $data
                 );
