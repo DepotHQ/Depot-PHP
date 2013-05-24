@@ -24,12 +24,20 @@ This allows you to login as a specific user
 		
 	// We need to build the authorise url and redirect user to authorise our app
 	if (!isset($_GET['code'])){
+	
+		if (!isset($_GET['error'])){
+			    
+		    $authoriseURL = $client->getAuthoriseURL($oauthCallback);
+	
+		    // redirect user
+		    header("Location: ".$authoriseURL);
+		    exit;
+	    
+	    } else {
 		    
-	    $authoriseURL = $client->getAuthoriseURL($oauthCallback);
-
-	    // redirect user
-	    header("Location: ".$authoriseURL);
-	    exit;
+		    echo '<p>Error</p><pre>'.$_GET['error'].'</pre>';
+		    
+	    }
 	    
 	    
 	// We now have the authorisation code to retrieve the access token
