@@ -106,7 +106,7 @@ class Depot {
     }
     
     public function patch($endpoint, $data){
-        return $this->call($endpoint, 'put', $data);
+        return $this->call($endpoint, 'patch', $data);
     }
     
     public function delete($endpoint, $data){
@@ -164,7 +164,6 @@ class Depot {
             case 'patch':
                 $curl_options = $curl_options + array(
 					CURLOPT_CUSTOMREQUEST => 'PATCH',
-					CURLOPT_POST        => 1,
 					CURLOPT_POSTFIELDS  => $data
                 );
             break;
@@ -172,7 +171,6 @@ class Depot {
             case 'delete':
                 $curl_options = $curl_options + array(
                 	CURLOPT_CUSTOMREQUEST => 'DELETE',
-                    CURLOPT_POST        => 1,
                     CURLOPT_POSTFIELDS  => $data
                 );
             break;
@@ -201,20 +199,20 @@ class Depot {
         curl_setopt_array($ch, $curl_options);
         
         // Send the request
-        $result = curl_exec($ch);
+        $this->result = curl_exec($ch);
         
         // curl info
-        $info = curl_getinfo($ch);
+        $this->info = curl_getinfo($ch);
         
         if ($this->debug){
-            var_dump($result);
-            var_dump($info);
+            var_dump($this->result);
+            var_dump($this->info);
         }
         
         // Close the connection
         curl_close($ch);
         
-        return ($type == 'oauth' || $this->format == 'json') ? json_decode($result) : $result;
+        return ($type == 'oauth' || $this->format == 'json') ? json_decode($this->result) : $this->result;
     }
             
 }
