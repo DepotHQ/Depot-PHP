@@ -24,12 +24,12 @@ class Depot {
     private $clientSecret;
     
     // oauth urls
-    private $oauthAuthoriseURL = 'http://tc.depothq.com/oauth/authorize';
-    private $oauthAccessTokenURL = 'http://tc.depothq.com/oauth/token';
+    private $oauthAuthoriseURL = 'http://{sub}.depothq.com/oauth/authorize';
+    private $oauthAccessTokenURL = 'http://{sub}.depothq.com/oauth/token';
     private $accessToken;
     
     // base url for api calls
-    private $apiUrl = 'http://tc.depothq.com/api/v1/';
+    private $apiUrl = 'http://{sub}.depothq.com/api/v1/';
     
     // debug mode
     private $debug = false;
@@ -41,7 +41,11 @@ class Depot {
     private $mode = 'header';
     
     // default constructor
-    function __construct($clientId, $clientSecret, $mode = '', $format = ''){
+    function __construct($subdomain, $clientId, $clientSecret, $mode = '', $format = ''){
+    
+    	$this->oauthAuthoriseURL = str_replace('{sub}', $subdomain, $this->oauthAuthoriseURL);
+    	$this->oauthAccessTokenURL = str_replace('{sub}', $subdomain, $this->oauthAccessTokenURL);
+    	$this->apiUrl = str_replace('{sub}', $subdomain, $this->apiUrl);
         
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
@@ -150,7 +154,7 @@ class Depot {
 	            );
             }
         }
-                                                
+                                                        
         // type of request determines our headers
         switch($type){
         
@@ -194,7 +198,7 @@ class Depot {
         $curl_options = $curl_options + array(
 			CURLOPT_URL => $curlURL
         );
-                                
+                                        
         // Set curl options
         curl_setopt_array($ch, $curl_options);
         

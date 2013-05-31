@@ -12,6 +12,7 @@ This allows you to login as a specific user
 	ini_set('display_errors', 'on');
 
 	// enter your app's config details here
+	$depotSubdomain = 'demo';
 	$oauthClient = 'your-client-id';
 	$oauthSecret = 'your-client-secret';
 	$oauthCallback = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
@@ -20,7 +21,7 @@ This allows you to login as a specific user
 	include('../Depot.php');
 	
 	// set up depot client
-	$client = new Depot($oauthClient, $oauthSecret, 'oauth');
+	$client = new Depot($depotSubdomain, $oauthClient, $oauthSecret, 'oauth');
 		
 	// We need to build the authorise url and redirect user to authorise our app
 	if (!isset($_GET['code'])){
