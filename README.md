@@ -28,11 +28,11 @@ OAuth authentication allows you to take on the persona of a user on the system, 
 
 One you have been supplied with these details, you need to authenticate the user against the authorise URL. The process is this:
 
-1) You build the authorize URL and redirect the user
-2) The user authenticates + grants permission
-3) The user is redirected to your callback URL along with a temporary code
-4) You authenticate that code with Depot to be given an access token that doesn't expire.
-5) You use that access token to make future calls to the system
+1. You build the authorize URL and redirect the user
+2. The user authenticates + grants permission
+3. The user is redirected to your callback URL along with a temporary code
+4. You authenticate that code with Depot to be given an access token that doesn't expire.
+5. You use that access token to make future calls to the system
 
 The good news is that the `examples/oauth.php` file contains code on how to do all this.
 
