@@ -44,7 +44,11 @@ This allows you to login as a specific user
 	// We now have the authorisation code to retrieve the access token
 	} else {
 	
+		// retrieve access token
 	    $accessToken = $client->getAccessToken($_GET['code'], $oauthCallback);
+	    
+	    // set access token so it us used for future calls
+	    $client->setAccessToken($accessToken);
 	    
 	    echo '
 	    	<p>It worked - your access token is: '.$accessToken->access_token.'</p>
