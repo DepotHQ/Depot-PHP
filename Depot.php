@@ -43,6 +43,8 @@ class Depot {
     // default constructor
     function __construct($subdomain, $clientId, $clientSecret, $mode = '', $format = ''){
     
+    	$subdomain = array_shift(explode('.', $subdomain));
+    
     	$this->oauthAuthoriseURL = str_replace('{sub}', $subdomain, $this->oauthAuthoriseURL);
     	$this->oauthAccessTokenURL = str_replace('{sub}', $subdomain, $this->oauthAccessTokenURL);
     	$this->apiUrl = str_replace('{sub}', $subdomain, $this->apiUrl);
