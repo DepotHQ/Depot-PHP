@@ -24,12 +24,12 @@ class Depot {
     private $clientSecret;
     
     // oauth urls
-    private $oauthAuthoriseURL = 'http://{sub}.depothq.com/oauth/authorize';
-    private $oauthAccessTokenURL = 'http://{sub}.depothq.com/oauth/token';
+    private $oauthAuthoriseURL = 'https://{sub}.depothq.com/oauth/authorize';
+    private $oauthAccessTokenURL = 'https://{sub}.depothq.com/oauth/token';
     private $accessToken;
     
     // base url for api calls
-    private $apiUrl = 'http://{sub}.depothq.com/api/v1/';
+    private $apiUrl = 'https://{sub}.depothq.com/api/v1/';
     
     // debug mode
     private $debug = false;
@@ -43,7 +43,7 @@ class Depot {
     // default constructor
     function __construct($subdomain, $clientId, $clientSecret, $mode = '', $format = ''){
     
-    	$subdomain = array_shift(explode('.', $subdomain));
+		$subdomain = array_shift(explode('.', $subdomain));
     
     	$this->oauthAuthoriseURL = str_replace('{sub}', $subdomain, $this->oauthAuthoriseURL);
     	$this->oauthAccessTokenURL = str_replace('{sub}', $subdomain, $this->oauthAccessTokenURL);
