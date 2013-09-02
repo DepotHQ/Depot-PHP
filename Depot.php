@@ -136,7 +136,9 @@ class Depot {
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT        => 60,
-            CURLOPT_USERAGENT      => 'Depot-PHP'
+            CURLOPT_USERAGENT      => 'Depot-PHP',
+			CURLOPT_SSL_VERIFYPEER => false,
+			CURLOPT_SSL_VERIFYHOST => false
         );
         
         // Set curl url to call
