@@ -43,7 +43,7 @@ class Depot {
     // default constructor
     function __construct($subdomain, $clientId, $clientSecret, $mode = '', $format = ''){
     
-		$subdomain = array_shift(explode('.', $subdomain));
+    	$subdomain = array_shift(explode('.', $subdomain));
     
     	$this->oauthAuthoriseURL = str_replace('{sub}', $subdomain, $this->oauthAuthoriseURL);
     	$this->oauthAccessTokenURL = str_replace('{sub}', $subdomain, $this->oauthAccessTokenURL);
@@ -117,7 +117,11 @@ class Depot {
     
     public function delete($endpoint, $data){
         return $this->call($endpoint, 'delete', $data);
-    }    
+    }   
+    
+    public function upload($endpoint, $path){
+        return $this->call($endpoint.'/upload', 'post', array('_tbxFile1' => '@'.$path), false);
+    } 
     
     /**************************************************************************
     * Private functions
@@ -200,7 +204,7 @@ class Depot {
         $curl_options = $curl_options + array(
 			CURLOPT_URL => $curlURL
         );
-                                        
+                                                
         // Set curl options
         curl_setopt_array($ch, $curl_options);
         
